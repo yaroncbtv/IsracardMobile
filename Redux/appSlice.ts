@@ -16,7 +16,7 @@ interface Book {
 
 interface State {
   value: number;
-  booksList: Array<Book>;
+  booksList: Book[];
 }
 
 // Define the initial state using that type
@@ -26,7 +26,7 @@ const initialState: State = {
 };
 
 export const appSlice = createSlice({
-  name: 'counter',
+  name: 'appSlice',
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
@@ -37,13 +37,13 @@ export const appSlice = createSlice({
       state.value -= 1;
     },
     // Use the PayloadAction type to declare the contents of `action.payload`
-    addBookToList: (state, action: PayloadAction<Array<Book>>) => {
+    addBookToList: (state, action: PayloadAction<Book[]>) => {
       state.booksList = action.payload;
     },
   },
 });
 
-export const {increment, decrement, incrementByAmount} = appSlice.actions;
+export const {addBookToList} = appSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectCount = (state: RootState) => state.appSlice.value;
