@@ -6,10 +6,13 @@ import {ActivityIndicator, MD2Colors} from 'react-native-paper';
 import {useAppSelector, useAppDispatch} from '../Redux/hooks';
 import {addBookToList} from '../Redux/appSlice';
 import {Book} from '../Interface/Book';
+import {Searchbar} from 'react-native-paper';
 
 export const Home: React.FC = () => {
   const booksList = useAppSelector(state => state.appSlice.booksList);
   const dispatch = useAppDispatch();
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [filteredItems, setFilteredItems] = React.useState<Book[]>(booksList);
 
   useEffect(() => {
     getData();
@@ -22,24 +25,42 @@ export const Home: React.FC = () => {
     );
     dispatch(addBookToList(res));
   };
-
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query === '') {
+      setFilteredItems(booksList);
+    } else {
+      const filtered = booksList.filter(item =>
+        item.title.toLowerCase().includes(query.toLowerCase()),
+      );
+      setFilteredItems(filtered);
+    }
+  };
   if (booksList) {
     return (
-      <FlatList
-        data={booksList}
-        keyExtractor={item => item?.number?.toString()}
-        renderItem={({item}) => (
-          <CardComponent
-            title={item.title}
-            releaseDate={`Release Date: ${item.releaseDate}`}
-            cover={item.cover}
-            description={item.description}
-            pages={item.pages}
-            index={item.index}
-            isDeleteBtn={false}
-          />
-        )}
-      />
+      <>
+        <Searchbar
+          style={{margin: 10}}
+          placeholder="Search"
+          onChangeText={handleSearch}
+          value={searchQuery}
+        />
+        <FlatList
+          data={filteredItems}
+          keyExtractor={item => item?.number?.toString()}
+          renderItem={({item}) => (
+            <CardComponent
+              title={item.title}
+              releaseDate={`Release Date: ${item.releaseDate}`}
+              cover={item.cover}
+              description={item.description}
+              pages={item.pages}
+              index={item.index}
+              isDeleteBtn={false}
+            />
+          )}
+        />
+      </>
     );
   }
   return (
