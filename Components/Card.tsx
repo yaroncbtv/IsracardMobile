@@ -1,12 +1,13 @@
 import * as React from 'react';
 import {Button, Card, Text, Snackbar} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
-import {useAppDispatch} from '../Redux/hooks';
+import {useAppDispatch, useAppSelector} from '../Redux/hooks';
 import {
   saveBookToFavoritesList,
   removeBookFromFavoritesList,
 } from '../Redux/appSlice';
 import {Book} from '../Interface/Book';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CardComponent: React.FC<Book> = ({
   title,
@@ -19,10 +20,13 @@ const CardComponent: React.FC<Book> = ({
 }) => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
-
+  const bookFavoritesList = useAppSelector(
+    state => state.appSlice.bookFavoritesList,
+  );
   const [visible, setVisible] = React.useState(false);
   const onToggleSnackBar = () => setVisible(!visible);
   const onDismissSnackBar = () => setVisible(false);
+  const [items, setItems] = React.useState<Book[]>(bookFavoritesList);
 
   const handlePress = () => {
     navigation.navigate('BookDetails', {
@@ -34,7 +38,7 @@ const CardComponent: React.FC<Book> = ({
       index: index,
     });
   };
-  const handleSavePress = () => {
+  const handleSavePress = async () => {
     const book: Book = {
       title,
       releaseDate,
@@ -43,10 +47,32 @@ const CardComponent: React.FC<Book> = ({
       pages,
       index,
     };
+    setItems(prevItems => [...prevItems, book]);
     dispatch(saveBookToFavoritesList(book));
     onToggleSnackBar();
   };
-  const handleDeleatePress = () => {
+  const saveItems = async () => {
+    try {
+      await AsyncStorage.setItem('books', JSON.stringify(items));
+    } catch (error) {
+      console.error('Error saving items to AsyncStorage', error);
+    }
+  };
+  React.useEffect(() => {
+    saveItems();
+  }, [items]);
+
+  const deleteItems = async () => {
+    try {
+      const filterItems = items.filter(item => item.index !== index);
+      setItems(filterItems);
+      await AsyncStorage.setItem('books', JSON.stringify(filterItems));
+    } catch (error) {
+      console.error('Error saving items to AsyncStorage', error);
+    }
+  };
+
+  const handleDeleatePress = async () => {
     const book: Book = {
       title,
       releaseDate,
@@ -56,6 +82,7 @@ const CardComponent: React.FC<Book> = ({
       index,
     };
     dispatch(removeBookFromFavoritesList(book));
+    deleteItems();
   };
   return (
     <>
