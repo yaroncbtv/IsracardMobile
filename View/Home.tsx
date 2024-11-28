@@ -7,8 +7,6 @@ import {useAppSelector, useAppDispatch} from '../Redux/hooks';
 import {addBookToList} from '../Redux/appSlice';
 import {Book} from '../Interface/Book';
 import {Searchbar} from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {saveAllBooksToFavoritesList} from '../Redux/appSlice';
 
 export const Home: React.FC = () => {
   const booksList = useAppSelector(state => state.appSlice.booksList);
@@ -18,23 +16,8 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     getData();
-    loadItems();
   }, []);
 
-  const loadItems = async () => {
-    try {
-      const savedItems = await AsyncStorage.getItem('books');
-      if (savedItems) {
-        dispatch(saveAllBooksToFavoritesList(JSON.parse(savedItems)));
-      }
-    } catch (error) {
-      console.error('Error loading items from AsyncStorage', error);
-    }
-  };
-
-  React.useEffect(() => {
-    loadItems();
-  }, []);
   const getData = async () => {
     const res = await getApi<Book[]>(
       'https://potterapi-fedeperin.vercel.app/en/books',
