@@ -4,10 +4,14 @@ import {Button} from 'react-native-paper';
 import {useAppDispatch} from '../Redux/hooks';
 import {saveBookToFavoritesList} from '../Redux/appSlice';
 import {Book} from '../Interface/Book';
+import {Snackbar} from 'react-native-paper';
 
 export const BooksDetails: React.FC = ({route}: any) => {
   const {title, releaseDate, cover, description, pages, index} = route.params;
   const dispatch = useAppDispatch();
+  const [visible, setVisible] = React.useState(false);
+  const onToggleSnackBar = () => setVisible(!visible);
+  const onDismissSnackBar = () => setVisible(false);
 
   const handlePress = () => {
     const book: Book = {
@@ -18,6 +22,7 @@ export const BooksDetails: React.FC = ({route}: any) => {
       pages,
       index,
     };
+    onToggleSnackBar();
     dispatch(saveBookToFavoritesList(book));
   };
 
@@ -48,6 +53,15 @@ export const BooksDetails: React.FC = ({route}: any) => {
         <Text style={styles.cell}>{pages}</Text>
       </View>
       <Button onPress={handlePress}>Save To Favorites</Button>
+
+      <Snackbar
+        visible={visible}
+        onDismiss={onDismissSnackBar}
+        action={{
+          label: 'Undo',
+        }}>
+        Favorites is update!
+      </Snackbar>
     </View>
   );
 };

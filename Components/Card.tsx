@@ -16,6 +16,7 @@ const CardComponent: React.FC<Book> = ({
   pages,
   index,
   isDeleteBtn,
+  isSave,
 }) => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
@@ -41,6 +42,7 @@ const CardComponent: React.FC<Book> = ({
       description,
       pages,
       index,
+      isSave,
     };
     dispatch(saveBookToFavoritesList(book));
     onToggleSnackBar();
@@ -53,9 +55,12 @@ const CardComponent: React.FC<Book> = ({
       description,
       pages,
       index,
+      isSave,
     };
+
     dispatch(removeBookFromFavoritesList(book));
   };
+
   return (
     <>
       <Card style={{margin: 10}}>
@@ -66,9 +71,6 @@ const CardComponent: React.FC<Book> = ({
               onDismiss={onDismissSnackBar}
               action={{
                 label: 'Undo',
-                onPress: () => {
-                  // Do something
-                },
               }}>
               Favorites is update!
             </Snackbar>
@@ -79,9 +81,10 @@ const CardComponent: React.FC<Book> = ({
         <Card.Cover source={{uri: cover}} />
         <Card.Actions>
           <Button onPress={handlePress}>More Details</Button>
-          <Button onPress={isDeleteBtn ? handleDeleatePress : handleSavePress}>
-            {isDeleteBtn ? 'Delete' : 'Save'}
-          </Button>
+          {isDeleteBtn && <Button onPress={handleDeleatePress}>Delete</Button>}
+          {!isDeleteBtn && !isSave && (
+            <Button onPress={handleSavePress}>Save</Button>
+          )}
         </Card.Actions>
       </Card>
     </>

@@ -17,13 +17,21 @@ export const Home: React.FC = () => {
   useEffect(() => {
     getData();
   }, []);
-
+  useEffect(() => {
+    setFilteredItems(booksList);
+  }, [booksList]);
   const getData = async () => {
-    const res = await getApi<Book[]>(
-      'https://potterapi-fedeperin.vercel.app/en/books',
-    );
-    dispatch(addBookToList(res));
-    setFilteredItems(res);
+    if (booksList.length === 0) {
+      const res = await getApi<Book[]>(
+        'https://potterapi-fedeperin.vercel.app/en/books',
+      );
+      const updatedBooks = res.map(book => ({
+        ...book,
+        isSave: false,
+      }));
+      dispatch(addBookToList(updatedBooks));
+      setFilteredItems(updatedBooks);
+    }
   };
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -36,6 +44,7 @@ export const Home: React.FC = () => {
       setFilteredItems(filtered);
     }
   };
+
   if (booksList) {
     return (
       <>
@@ -57,6 +66,7 @@ export const Home: React.FC = () => {
               pages={item.pages}
               index={item.index}
               isDeleteBtn={false}
+              isSave={item.isSave}
             />
           )}
         />

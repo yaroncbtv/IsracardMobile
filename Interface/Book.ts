@@ -8,4 +8,5 @@ export interface Book {
   cover: string;
   index: number;
   isDeleteBtn: Boolean;
+  isSave: Boolean;
 }
