@@ -7,7 +7,8 @@ import {Book} from '../Interface/Book';
 import {Snackbar} from 'react-native-paper';
 
 export const BooksDetails: React.FC = ({route}: any) => {
-  const {title, releaseDate, cover, description, pages, index} = route.params;
+  const {title, releaseDate, cover, description, pages, index, isSave} =
+    route.params;
   const dispatch = useAppDispatch();
   const [visible, setVisible] = React.useState(false);
   const onToggleSnackBar = () => setVisible(!visible);
@@ -21,6 +22,7 @@ export const BooksDetails: React.FC = ({route}: any) => {
       description,
       pages,
       index,
+      isSave,
     };
     onToggleSnackBar();
     dispatch(saveBookToFavoritesList(book));
@@ -52,8 +54,7 @@ export const BooksDetails: React.FC = ({route}: any) => {
         <Text style={[styles.cell, styles.field]}>Pages:</Text>
         <Text style={styles.cell}>{pages}</Text>
       </View>
-      <Button onPress={handlePress}>Save To Favorites</Button>
-
+      {!isSave && <Button onPress={handlePress}>Save To Favorites</Button>}
       <Snackbar
         visible={visible}
         onDismiss={onDismissSnackBar}

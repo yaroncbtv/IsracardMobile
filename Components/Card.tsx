@@ -32,6 +32,7 @@ const CardComponent: React.FC<Book> = ({
       description: description,
       pages: pages,
       index: index,
+      isSave: isSave,
     });
   };
   const handleSavePress = async () => {
