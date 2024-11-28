@@ -5,17 +5,7 @@ import {FlatList} from 'native-base';
 import {ActivityIndicator, MD2Colors} from 'react-native-paper';
 import {useAppSelector, useAppDispatch} from '../Redux/hooks';
 import {addBookToList} from '../Redux/appSlice';
-
-interface Book {
-  number: number;
-  title: string;
-  originalTitle: string;
-  releaseDate: string;
-  description: string;
-  pages: number;
-  cover: string;
-  index: number;
-}
+import {Book} from '../Interface/Book';
 
 export const Home: React.FC = () => {
   const booksList = useAppSelector(state => state.appSlice.booksList);
@@ -24,6 +14,7 @@ export const Home: React.FC = () => {
   useEffect(() => {
     getData();
   }, []);
+  console.log('dfgsdfg');
 
   const getData = async () => {
     const res = await getApi<Book[]>(
@@ -36,12 +27,16 @@ export const Home: React.FC = () => {
     return (
       <FlatList
         data={booksList}
-        keyExtractor={item => item.number.toString()}
+        keyExtractor={item => item?.number?.toString()}
         renderItem={({item}) => (
           <CardComponent
             title={item.title}
-            content={`Release Date: ${item.releaseDate}`}
-            imageUri={item.cover}
+            releaseDate={`Release Date: ${item.releaseDate}`}
+            cover={item.cover}
+            description={item.description}
+            pages={item.pages}
+            index={item.index}
+            isDeleteBtn={false}
           />
         )}
       />

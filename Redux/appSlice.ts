@@ -1,28 +1,18 @@
 import {createSlice} from '@reduxjs/toolkit';
 import type {PayloadAction} from '@reduxjs/toolkit';
 import type {RootState} from './store';
-
-// Define a type for the slice state
-interface Book {
-  number: number;
-  title: string;
-  originalTitle: string;
-  releaseDate: string;
-  description: string;
-  pages: number;
-  cover: string;
-  index: number;
-}
-
+import {Book} from '../Interface/Book';
 interface State {
   value: number;
   booksList: Book[];
+  bookFavoritesList: Book[];
 }
 
 // Define the initial state using that type
 const initialState: State = {
   value: 0,
   booksList: [],
+  bookFavoritesList: [],
 };
 
 export const appSlice = createSlice({
@@ -40,10 +30,24 @@ export const appSlice = createSlice({
     addBookToList: (state, action: PayloadAction<Book[]>) => {
       state.booksList = action.payload;
     },
+    saveBookToFavoritesList: (state, action: PayloadAction<Book>) => {
+      state.bookFavoritesList.push(action.payload);
+    },
+    removeBookFromFavoritesList: (state, action: PayloadAction<Book>) => {
+      console.log(action.payload.index);
+
+      state.bookFavoritesList = state.bookFavoritesList.filter(
+        item => item.index !== action.payload.index,
+      );
+    },
   },
 });
 
-export const {addBookToList} = appSlice.actions;
+export const {
+  addBookToList,
+  saveBookToFavoritesList,
+  removeBookFromFavoritesList,
+} = appSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectCount = (state: RootState) => state.appSlice.value;
