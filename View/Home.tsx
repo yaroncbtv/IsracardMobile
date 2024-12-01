@@ -1,4 +1,3 @@
-import {getApi} from '../Api/apiService';
 import React, {useEffect} from 'react';
 import CardComponent from '../Components/Card'; // Adjust path as necessary
 import {FlatList} from 'native-base';
@@ -6,11 +5,12 @@ import {ActivityIndicator, MD2Colors} from 'react-native-paper';
 import {useAppSelector, useAppDispatch} from '../Redux/hooks';
 import {Book} from '../Interface/Book';
 import {Searchbar} from 'react-native-paper';
+import {useDebounce} from 'use-debounce';
 
 export const Home: React.FC = () => {
   const booksList = useAppSelector(state => state.appSlice.booksList);
   const dispatch = useAppDispatch();
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = useDebounce('', 500);
   const [filteredItems, setFilteredItems] = React.useState<Book[]>(booksList);
 
   useEffect(() => {
