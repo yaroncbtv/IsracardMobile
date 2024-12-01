@@ -4,7 +4,6 @@ import CardComponent from '../Components/Card'; // Adjust path as necessary
 import {FlatList} from 'native-base';
 import {ActivityIndicator, MD2Colors} from 'react-native-paper';
 import {useAppSelector, useAppDispatch} from '../Redux/hooks';
-import {addBookToList} from '../Redux/appSlice';
 import {Book} from '../Interface/Book';
 import {Searchbar} from 'react-native-paper';
 
@@ -17,20 +16,15 @@ export const Home: React.FC = () => {
   useEffect(() => {
     getData();
   }, []);
+
   useEffect(() => {
     setFilteredItems(booksList);
   }, [booksList]);
+
   const getData = async () => {
     if (booksList.length === 0) {
-      const res = await getApi<Book[]>(
-        'https://potterapi-fedeperin.vercel.app/en/books',
-      );
-      const updatedBooks = res.map(book => ({
-        ...book,
-        isSave: false,
-      }));
-      dispatch(addBookToList(updatedBooks));
-      setFilteredItems(updatedBooks);
+      dispatch({type: 'books/fetchBooks'});
+      setFilteredItems(booksList);
     }
   };
   const handleSearch = (query: string) => {
