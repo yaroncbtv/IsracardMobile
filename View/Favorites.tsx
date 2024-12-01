@@ -1,29 +1,60 @@
 import {useAppSelector} from '../Redux/hooks';
 import {FlatList} from 'native-base';
 import CardComponent from '../Components/Card';
-import React from 'react';
+import React, {useEffect} from 'react';
+import {Searchbar} from 'react-native-paper';
+import {Book} from '../Interface/Book';
+import {useDebounce} from 'use-debounce';
 
 export const Favorites: React.FC = () => {
   const bookFavoritesList = useAppSelector(
     state => state.appSlice.bookFavoritesList,
   );
+
+  const [searchQuery, setSearchQuery] = useDebounce('', 500);
+  const [filteredItems, setFilteredItems] =
+    React.useState<Book[]>(bookFavoritesList);
+
+  useEffect(() => {
+    setFilteredItems(bookFavoritesList);
+  }, [bookFavoritesList]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query === '') {
+      setFilteredItems(bookFavoritesList);
+    } else {
+      const filtered = bookFavoritesList.filter(item =>
+        item.title.toLowerCase().includes(query.toLowerCase()),
+      );
+      setFilteredItems(filtered);
+    }
+  };
   if (bookFavoritesList.length > 0) {
     return (
-      <FlatList
-        data={bookFavoritesList}
-        keyExtractor={item => item?.index?.toString()}
-        renderItem={({item}) => (
-          <CardComponent
-            title={item.title}
-            releaseDate={`Release Date: ${item.releaseDate}`}
-            cover={item.cover}
-            description={item.description}
-            pages={item.pages}
-            index={item.index}
-            isDeleteBtn={true}
-          />
-        )}
-      />
+      <>
+        <Searchbar
+          style={{margin: 10}}
+          placeholder="Search"
+          onChangeText={handleSearch}
+          value={searchQuery}
+        />
+        <FlatList
+          data={filteredItems}
+          keyExtractor={item => item?.index?.toString()}
+          renderItem={({item}) => (
+            <CardComponent
+              title={item.title}
+              releaseDate={`Release Date: ${item.releaseDate}`}
+              cover={item.cover}
+              description={item.description}
+              pages={item.pages}
+              index={item.index}
+              isDeleteBtn={true}
+            />
+          )}
+        />
+      </>
     );
   }
 };
