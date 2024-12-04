@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import CardComponent from '../Components/Card'; // Adjust path as necessary
-import {FlatList} from 'native-base';
 import {ActivityIndicator, MD2Colors} from 'react-native-paper';
 import {useAppSelector, useAppDispatch} from '../Redux/hooks';
 import {Book} from '../Interface/Book';
@@ -8,6 +7,7 @@ import {Searchbar} from 'react-native-paper';
 import {useDebounce} from 'use-debounce';
 import {View, Text} from 'react-native';
 import {Menu, Button, Divider, Provider} from 'react-native-paper';
+import {FlashList} from '@shopify/flash-list';
 
 export const Home: React.FC = () => {
   const booksList = useAppSelector(state => state.appSlice.booksList);
@@ -102,9 +102,10 @@ export const Home: React.FC = () => {
             <Menu.Item title="Close" onPress={closeMenu} />
           </Menu>
         </View>
-        <FlatList
+        <FlashList
           data={filteredItems}
           keyExtractor={item => item?.number?.toString()}
+          estimatedItemSize={200}
           renderItem={({item}) => (
             <CardComponent
               title={item.title}

@@ -1,10 +1,10 @@
 import {useAppSelector} from '../Redux/hooks';
-import {FlatList} from 'native-base';
 import CardComponent from '../Components/Card';
 import React, {useEffect} from 'react';
 import {Searchbar} from 'react-native-paper';
 import {Book} from '../Interface/Book';
 import {useDebounce} from 'use-debounce';
+import {FlashList} from '@shopify/flash-list';
 
 export const Favorites: React.FC = () => {
   const bookFavoritesList = useAppSelector(
@@ -39,9 +39,10 @@ export const Favorites: React.FC = () => {
           onChangeText={handleSearch}
           value={searchQuery}
         />
-        <FlatList
+        <FlashList
           data={filteredItems}
           keyExtractor={item => item?.index?.toString()}
+          estimatedItemSize={200}
           renderItem={({item}) => (
             <CardComponent
               title={item.title}
