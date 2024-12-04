@@ -7,6 +7,7 @@ import {
   removeBookFromFavoritesList,
 } from '../Redux/appSlice';
 import {Book} from '../Interface/Book';
+import {Share} from 'react-native';
 
 const CardComponent: React.FC<Book> = ({
   title,
@@ -62,6 +63,28 @@ const CardComponent: React.FC<Book> = ({
     dispatch(removeBookFromFavoritesList(book));
   };
 
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        title: title,
+        message: description,
+        url: cover,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log('Shared with activity type:', result.activityType);
+        } else {
+          console.log('Shared successfully');
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Share dismissed');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
   return (
     <>
       <Card style={{margin: 10}}>
@@ -86,6 +109,14 @@ const CardComponent: React.FC<Book> = ({
           {!isDeleteBtn && !isSave && (
             <Button onPress={handleSavePress}>Save</Button>
           )}
+          <Button
+            buttonColor="blue"
+            textColor="white"
+            mode="contained"
+            icon="share"
+            onPress={onShare}>
+            Share
+          </Button>
         </Card.Actions>
       </Card>
     </>
